@@ -1,34 +1,37 @@
-import React, { Component } from "react";
-import { v4 as uuid } from "uuid";
-import s from "./phoneEditor.module.css";
+import React, { Component } from 'react'
+import { v4 as uuid } from 'uuid'
+import s from './phoneEditor.module.css'
 
 export default class PhoneEditor extends Component {
   state = {
-    userName: "",
-    userPhone: "",
-  };
+    userName: '',
+    userPhone: '',
+  }
 
   handleChange = (e) => {
-    const { name, value } = e.target;
-    // console.log(name);
-    // console.log(value);
+    const { name, value } = e.target
+
     this.setState({
       [name]: value,
-    });
-  };
+    })
+  }
 
   handleSubmit = (e) => {
-    e.preventDefault();
-    console.log("submit");
+    e.preventDefault()
+    const isContactExist = (userName) =>
+      this.props.contactList.some(
+        (contact) => userName.toLowerCase() === contact.name.toLowerCase(),
+      )
     const newContact = {
       id: uuid(),
+
       name: this.state.userName,
       number: this.state.userPhone,
-    };
-    console.log(newContact);
-    console.log(this.props.x);
-    this.props.x(newContact);
-  };
+    }
+    if (!isContactExist(this.state.userName)) {
+      this.props.x(newContact)
+    } else alert(`contact ${this.state.userName} already exist`)
+  }
 
   render() {
     return (
@@ -40,6 +43,9 @@ export default class PhoneEditor extends Component {
             id="name"
             name="userName"
             type="text"
+            pattern="^[a-zA-Zа-яА-Я]+(([' -][a-zA-Zа-яА-Я ])?[a-zA-Zа-яА-Я]*)*$"
+            title="Имя может состоять только из букв, апострофа, тире и пробелов. Например Adrian, Jacob Mercer, Charles de Batz de Castelmore d'Artagnan и т. п."
+            required
             value={this.state.name}
             onChange={this.handleChange}
           />
@@ -48,12 +54,15 @@ export default class PhoneEditor extends Component {
             id="phone"
             name="userPhone"
             type="tel"
+            pattern="\+?\d{1,4}?[-.\s]?\(?\d{1,3}?\)?[-.\s]?\d{1,4}[-.\s]?\d{1,4}[-.\s]?\d{1,9}"
+            title="Номер телефона должен состоять цифр и может содержать пробелы, тире, круглые скобки и может начинаться с +"
+            required
             value={this.state.phone}
             onChange={this.handleChange}
           />
           <button type="submit">Add contact</button>
         </form>
       </>
-    );
+    )
   }
 }
